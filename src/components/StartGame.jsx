@@ -1,18 +1,12 @@
+// src/components/StartGame.jsx
 import React, { useState } from 'react';
 
-/**
- * StartGame
- * En komponent som visar en startskärm för quizet och låter användaren välja svårighetsgrad.
- *
- * Props:
- * - onStart: (difficultyLevel: number) => void — Callback som anropas när spelet ska startas med valt svårighetsnivå
- */
 export function StartGame({ onStart }) {
   const [difficulty, setDifficulty] = useState(1);
 
   return (
     <div className="h-screen flex flex-col items-center justify-center bg-gray-900 px-4">
-      <div className="text-center w-full max-w-md">
+       <div className="text-center w-full max-w-sm sm:max-w-md">
         <h1 className="text-4xl font-extrabold text-white mb-6">Welcome to the Quiz!</h1>
         <p className="text-lg text-gray-300 mb-8">
           Choose a difficulty level!
@@ -43,7 +37,7 @@ export function StartGame({ onStart }) {
 
         <button
           onClick={() => onStart(difficulty)}
-          className="w-full px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg transition duration-200 mt-4"
+          className="w-full px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg transition duration-200 mt-4"
         >
           Start Quiz
         </button>

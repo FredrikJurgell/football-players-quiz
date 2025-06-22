@@ -1,3 +1,4 @@
+// src/components/QuizControls.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { normalize } from '../utils/normalize';
 
@@ -72,7 +73,7 @@ export function QuizControls({
   };
 
   return (
-    <div className="bg-gray-800 p-8 rounded-2xl shadow-xl flex flex-col space-y-6 lg:col-span-1">
+    <div className="bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-xl flex flex-col space-y-4 sm:space-y-6 lg:col-span-1">
       <h2 className="text-2xl font-bold text-white">
         Score: <span className="text-green-400">{score}</span> / {total}
       </h2>
@@ -113,9 +114,8 @@ export function QuizControls({
                   setGuess(player.full_name);
                   setShowSuggestions(false);
                 }}
-                className={`px-4 py-2 text-white cursor-pointer transition ${
-                  i === highlightedIndex ? 'bg-indigo-600' : 'hover:bg-gray-700'
-                }`}
+                className={`px-4 py-2 text-white cursor-pointer transition ${i === highlightedIndex ? 'bg-indigo-600' : 'hover:bg-gray-700'
+                  }`}
               >
                 {player.full_name}
               </li>
@@ -126,25 +126,25 @@ export function QuizControls({
 
       {feedback && <p className="text-red-400 text-sm italic">{feedback}</p>}
 
-      <div className="flex flex-col space-y-3 pt-2">
-        <div className="flex space-x-4">
+      <div className="flex flex-col space-y-2 pt-2">
+        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
           <button
             onClick={handleGuess}
             disabled={!guess.trim()}
-            className="flex-1 py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold text-white transition"
+            className="w-full sm:flex-1 py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold text-white transition"
           >
             Guess
           </button>
           <button
             onClick={onSkip}
-            className="flex-1 py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold text-white transition"
+            className="w-full sm:flex-1 py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold text-white transition"
           >
             Next
           </button>
         </div>
         <button
           onClick={onAbort}
-          className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white transition"
+          className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white transition"
         >
           Cancel
         </button>

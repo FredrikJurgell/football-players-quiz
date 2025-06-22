@@ -9,9 +9,9 @@ export function usePlayers(difficultyLevel = 1) {
 
   const getPoolSize = level => {
     switch (level) {
-      case 1: return 100; // Enkel
+      case 1: return 100; // Easy
       case 2: return 500; // Medium
-      case 3: return 100; // Svårt
+      case 3: return 100; // Hard
       case 4: return Infinity; // Extreme
       default: return 100;
     }
