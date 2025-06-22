@@ -1,25 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
  * StartGame
- * En komponent som visar en startskärm för quizet och startar spelet vid knapptryck.
+ * En komponent som visar en startskärm för quizet och låter användaren välja svårighetsgrad.
  *
  * Props:
- * - onStart: () => void — Callback som anropas när spelet ska startas
+ * - onStart: (difficultyLevel: number) => void — Callback som anropas när spelet ska startas med valt svårighetsnivå
  */
 export function StartGame({ onStart }) {
+  const [difficulty, setDifficulty] = useState(1);
+
   return (
     <div className="h-screen flex flex-col items-center justify-center bg-gray-900 px-4">
-      <div className="text-center">
-        <h1 className="text-4xl font-extrabold text-white mb-6">Välkommen till Quizet!</h1>
+      <div className="text-center w-full max-w-md">
+        <h1 className="text-4xl font-extrabold text-white mb-6">Welcome to the Quiz!</h1>
         <p className="text-lg text-gray-300 mb-8">
-          Testa dina kunskaper och få poäng för varje rätt svar.
+          Choose a difficulty level!
         </p>
+
+        <div className="mb-6 text-center">
+          <label htmlFor="difficulty" className="block mb-2 text-white font-medium">
+            Difficulty Level:
+          </label>
+          <ul className="flex flex-col items-center space-y-2">
+            {[
+              { value: 1, label: 'Easy' },
+              { value: 2, label: 'Medium' },
+              { value: 3, label: 'Hard' },
+              { value: 4, label: 'Extreme' },
+            ].map(option => (
+              <li
+                key={option.value}
+                onClick={() => setDifficulty(option.value)}
+                className={`w-40 text-center text-sm px-3 py-1.5 rounded-md cursor-pointer transition border border-gray-600 text-white bg-gray-800 hover:bg-gray-700 ${difficulty === option.value ? 'ring-2 ring-indigo-500 border-indigo-500' : ''
+                  }`}
+              >
+                {option.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <button
-          onClick={onStart}
-          className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg transition duration-200"
+          onClick={() => onStart(difficulty)}
+          className="w-full px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg transition duration-200 mt-4"
         >
-          Starta quiz
+          Start Quiz
         </button>
       </div>
     </div>
