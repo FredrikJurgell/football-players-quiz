@@ -8,7 +8,7 @@ export function QuizCard({ html, questionNumber, total, duration }) {
       className="
         flex flex-col
         bg-gray-800 p-0 sm:p-4
-        rounded-2xl shadow-xl
+        rounded-2xl
         max-h-[80vh] overflow-auto
       "
     >

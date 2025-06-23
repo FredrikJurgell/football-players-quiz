@@ -98,7 +98,7 @@ export function QuizControls({
   return (
     <div className="bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-xl flex flex-col space-y-4 sm:space-y-6 lg:col-span-1">
       <h2 className="text-2xl font-bold text-white">
-        Score: <span className="text-green-400">{score}</span> / {total}
+        Score: <span className="text-green-400">{score}</span>
       </h2>
 
       <label htmlFor="guess" className="block text-sm font-medium text-gray-200">
