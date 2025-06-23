@@ -67,9 +67,9 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 py-4 px-2 sm:py-12 sm:px-6 text-white">
+    <div className="min-h-screen bg-gray-900 py-4 px-1 sm:py-12 sm:px-6 text-white">
       <div className="max-w-full sm:max-w-4xl lg:max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
-        <div className="prose prose-white max-w-none bg-gray-800 p-6 rounded-2xl shadow-xl lg:col-span-2">
+        <div className="prose prose-white max-w-none bg-gray-800 p-1 rounded-2xl shadow-xl lg:col-span-2">
           <QuizCard
             html={sections[current].html}
             questionNumber={current + 1}
