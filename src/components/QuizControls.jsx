@@ -1,23 +1,22 @@
-// src/components/QuizControls.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { normalize } from '../utils/normalize';
 
 export function QuizControls({
   section,
+  total,
   currentIndex,
   onCorrect,
   onSkip,
   onAbort,
   allPlayers = [],
 }) {
-  const [guess, setGuess] = useState('');
-  const [feedback, setFeedback] = useState('');
-  const [score, setScore] = useState(0);
-  const [startTime, setStartTime] = useState(Date.now());
+  const [guess, setGuess]             = useState('');
+  const [feedback, setFeedback]       = useState('');
+  const [score, setScore]             = useState(0);
+  const [startTime, setStartTime]     = useState(Date.now());
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const inputRef = useRef(null);
-  const suggestionsRef = useRef(null);
   const duration = 30;
 
   useEffect(() => {
@@ -28,18 +27,15 @@ export function QuizControls({
     inputRef.current?.focus();
   }, [currentIndex]);
 
-  const safeGuess = normalize(guess);
+  const safeGuess   = normalize(guess);
   const suggestions = allPlayers
-    .filter(player => normalize(player.full_name ?? '').includes(safeGuess))
+    .filter(p => normalize(p.full_name ?? '').includes(safeGuess))
     .slice(0, 10);
 
   const handleGuess = () => {
     if (!guess.trim()) return;
-
     const correct = normalize(section.player.full_name ?? '');
-    const attempt = safeGuess;
-
-    if (attempt === correct) {
+    if (safeGuess === correct) {
       const elapsed = Date.now() - startTime;
       const pts = Math.max(
         Math.ceil(((duration * 1000 - elapsed) / (duration * 1000)) * 100),
@@ -53,8 +49,7 @@ export function QuizControls({
   };
 
   const handleKeyDown = e => {
-    if (!showSuggestions || suggestions.length === 0) return;
-
+    if (!showSuggestions || !suggestions.length) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setHighlightedIndex(i => (i + 1) % suggestions.length);
@@ -63,11 +58,8 @@ export function QuizControls({
       setHighlightedIndex(i => (i - 1 + suggestions.length) % suggestions.length);
     } else if (e.key === 'Enter' && highlightedIndex >= 0) {
       e.preventDefault();
-      const selected = suggestions[highlightedIndex];
-      if (selected) {
-        setGuess(selected.full_name);
-        setShowSuggestions(false);
-      }
+      setGuess(suggestions[highlightedIndex].full_name);
+      setShowSuggestions(false);
     }
   };
 
@@ -81,12 +73,12 @@ export function QuizControls({
         Enter full name of the player:
       </label>
 
-      <div className="relative">
+      <div>
         <input
           id="guess"
           ref={inputRef}
-          className="block w-full rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-600 
-                     focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 
+          className="block w-full rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-600
+                     focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500
                      focus:ring-offset-2 focus:ring-offset-gray-900 transition-shadow duration-200 py-2 px-4"
           type="text"
           value={guess}
@@ -102,10 +94,7 @@ export function QuizControls({
         />
 
         {showSuggestions && suggestions.length > 0 && (
-          <ul
-            ref={suggestionsRef}
-            className="relative mt-1 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded-lg shadow-md"
-          >
+          <ul className="mt-1 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded-lg shadow-md">
             {suggestions.map((player, i) => (
               <li
                 key={player.id}
@@ -113,8 +102,9 @@ export function QuizControls({
                   setGuess(player.full_name);
                   setShowSuggestions(false);
                 }}
-                className={`px-4 py-2 text-white cursor-pointer transition ${i === highlightedIndex ? 'bg-indigo-600' : 'hover:bg-gray-700'
-                  }`}
+                className={`px-4 py-2 text-white cursor-pointer transition ${
+                  i === highlightedIndex ? 'bg-indigo-600' : 'hover:bg-gray-700'
+                }`}
               >
                 {player.full_name}
               </li>
