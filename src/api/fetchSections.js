@@ -1,9 +1,15 @@
 import Papa from 'papaparse';
 
+let _csvCache = null;
+
 export async function loadPlayersCsv(path = '/fifa_players.csv') {
-  const res = await fetch(path);
+  if (_csvCache) return _csvCache;
+
+  const res  = await fetch(path);
   const text = await res.text();
   const data = Papa.parse(text, { header: true }).data;
+
+  _csvCache = data;
   return data;
 }
 

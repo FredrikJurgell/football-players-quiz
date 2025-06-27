@@ -1,19 +1,21 @@
+// src/App.jsx
 import React, { useState } from 'react';
-import { usePlayers } from './hooks/usePlayers';
-import { StartGame } from './components/StartGame';
+import { usePlayers }    from './hooks/usePlayers';
+import { StartGame }     from './components/StartGame';
 import { LoadingScreen } from './components/LoadingScreen';
-import { QuizScreen } from './components/QuizScreen';
-import { EndScreen } from './components/EndScreen';
+import { QuizScreen }    from './components/QuizScreen';
+import { EndScreen }     from './components/EndScreen';
 
 export default function App() {
   const [difficulty, setDifficulty] = useState(1);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [reloadKey, setReloadKey]   = useState(0);
   const { players, sections, shuffledAll } = usePlayers(difficulty, reloadKey);
-  const [started, setStarted] = useState(false);
-  const [current, setCurrent] = useState(0);
+
+  const [started, setStarted]       = useState(false);
+  const [current, setCurrent]       = useState(0);
   const [totalScore, setTotalScore] = useState(0);
-  const [ended, setEnded] = useState(false);
-  const [scores, setScores] = useState([]);
+  const [ended, setEnded]           = useState(false);
+  const [scores, setScores]         = useState([]);
 
   const duration = 30;
 
@@ -23,6 +25,7 @@ export default function App() {
     setStarted(true);
     setCurrent(0);
     setTotalScore(0);
+    setScores([]);
     setEnded(false);
   };
 
@@ -50,14 +53,17 @@ export default function App() {
     setScores([]);
   };
 
+  // 1) Not started yet
   if (!started) {
     return <StartGame onStart={startGame} />;
   }
 
+  // 2) Still loading full quiz (players chosen + infoboxes fetched)
   if (!players.length || sections.length < players.length) {
     return <LoadingScreen />;
   }
 
+  // 3) Finished all questions
   if (ended) {
     return (
       <EndScreen
@@ -69,6 +75,7 @@ export default function App() {
     );
   }
 
+  // 4) Quiz in progress
   return (
     <QuizScreen
       section={sections[current]}
