@@ -164,7 +164,7 @@ export function QuizControls({
             onClick={handleGuess}
             disabled={!guess.trim()}
             className="
-              w-full sm:flex-1 py-2 px-4 bg-indigo-600 hover:bg-indigo-700
+              w-full sm:flex-[2] py-2 px-4 bg-indigo-600 hover:bg-indigo-700
               rounded-lg font-semibold text-white transition
             "
           >
@@ -173,7 +173,7 @@ export function QuizControls({
           <button
             onClick={onSkip}
             className="
-              w-full sm:flex-1 py-2 px-4 bg-gray-600 hover:bg-gray-700
+              w-full sm:flex-[1] py-2 px-4 bg-gray-600 hover:bg-gray-700
               rounded-lg font-semibold text-white transition
             "
           >
