@@ -20,17 +20,27 @@ export function QuizControls({
   const inputRef = useRef(null);
   const duration = 30;
 
+  // Reset state and optionally autofocus on desktop only
   useEffect(() => {
     setGuess('');
     setFeedback('');
     setStartTime(Date.now());
     setHighlightedIndex(-1);
-    inputRef.current?.focus();
+
+    // Detect mobile user agents
+    const ua = navigator.userAgent || navigator.vendor || '';
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+
+    if (!isMobile) {
+      inputRef.current?.focus();
+    }
   }, [currentIndex]);
 
+  // Tokenize and normalize the user's input
   const safeGuess = normalize(guess);
   const tokens = safeGuess.split(/\s+/).filter(Boolean);
 
+  // Filter suggestions by matching all tokens, then sort by rating descending
   const suggestions = allPlayers
     .filter(player => {
       const name = normalize(player.full_name ?? '');
@@ -98,7 +108,7 @@ export function QuizControls({
   return (
     <div className="bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-xl flex flex-col space-y-4 sm:space-y-6 lg:col-span-1">
       <h2 className="text-2xl font-bold text-white">
-        Score: <span className="text-green-400">{score}</span>
+        Score: <span className="text-green-400">{score}</span> / {total}
       </h2>
 
       <label htmlFor="guess" className="block text-sm font-medium text-gray-200">
@@ -119,7 +129,7 @@ export function QuizControls({
             setGuess(v);
             setFeedback('');
             setHighlightedIndex(-1);
-            setShowSuggestions(true); // reopen suggestions when typing
+            setShowSuggestions(true);
           }}
           onKeyDown={handleKeyDown}
           className="
