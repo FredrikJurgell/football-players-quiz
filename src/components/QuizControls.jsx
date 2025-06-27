@@ -20,27 +20,22 @@ export function QuizControls({
   const inputRef = useRef(null);
   const duration = 30;
 
-  // Reset state and optionally autofocus on desktop only
   useEffect(() => {
     setGuess('');
     setFeedback('');
     setStartTime(Date.now());
     setHighlightedIndex(-1);
 
-    // Detect mobile user agents
     const ua = navigator.userAgent || navigator.vendor || '';
     const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-
     if (!isMobile) {
       inputRef.current?.focus();
     }
   }, [currentIndex]);
 
-  // Tokenize and normalize the user's input
   const safeGuess = normalize(guess);
   const tokens = safeGuess.split(/\s+/).filter(Boolean);
 
-  // Filter suggestions by matching all tokens, then sort by rating descending
   const suggestions = allPlayers
     .filter(player => {
       const name = normalize(player.full_name ?? '');
@@ -144,7 +139,7 @@ export function QuizControls({
           <ul className="mt-1 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded-lg shadow-md">
             {suggestions.map((player, i) => (
               <li
-                key={player.id}
+                key={`${player.id}-${i}`}
                 onMouseDown={() => {
                   setGuess(player.full_name);
                   setShowSuggestions(false);

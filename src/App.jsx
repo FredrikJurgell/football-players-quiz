@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { usePlayers }    from './hooks/usePlayers';
-import { StartGame }     from './components/StartGame';
+import { usePlayers } from './hooks/usePlayers';
+import { StartGame } from './components/StartGame';
 import { LoadingScreen } from './components/LoadingScreen';
-import { QuizScreen }    from './components/QuizScreen';
-import { EndScreen }     from './components/EndScreen';
+import { QuizScreen } from './components/QuizScreen';
+import { EndScreen } from './components/EndScreen';
 
 export default function App() {
   const [difficulty, setDifficulty] = useState(1);
-  const [reloadKey, setReloadKey]   = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
   const { players, sections, shuffledAll } = usePlayers(difficulty, reloadKey);
-  const [started, setStarted]   = useState(false);
-  const [current, setCurrent]   = useState(0);
+  const [started, setStarted] = useState(false);
+  const [current, setCurrent] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
-  const [ended, setEnded]       = useState(false);
+  const [ended, setEnded] = useState(false);
   const [scores, setScores] = useState([]);
 
   const duration = 30;
