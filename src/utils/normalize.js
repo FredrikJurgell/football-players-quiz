@@ -1,8 +1,8 @@
 // src/utils/normalize.js
-export const normalize = str =>
-  str
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // remove combining diacritics
-    .replace(/[^\x00-\x7F]/g, '') // remove non-ASCII characters
+export function normalize(str = '') {
+  return str
     .toLowerCase()
-    .trim();
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}

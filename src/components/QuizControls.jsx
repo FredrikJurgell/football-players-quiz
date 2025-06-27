@@ -12,55 +12,45 @@ export function QuizControls({
   onAbort,
   allPlayers = [],
 }) {
-  const [guess, setGuess]                       = useState('');
-  const [score, setScore]                       = useState(0);
-  const [startTime, setStartTime]               = useState(Date.now());
-  const [showSuggestions, setShowSuggestions]   = useState(false);
+  const [guess, setGuess] = useState('');
+  const [score, setScore] = useState(0);
+  const [startTime, setStartTime] = useState(Date.now());
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [result, setResult]                     = useState(null); // { type: 'success'|'error'|'info', text }
+  const [result, setResult] = useState(null);
   const inputRef = useRef(null);
   const duration = 30;
 
-  // Reset on question change, autofocus on desktop
+  // Reset on question change, autofocus desktop
   useEffect(() => {
     setGuess('');
     setStartTime(Date.now());
     setHighlightedIndex(-1);
     setResult(null);
-
-    const ua = navigator.userAgent || navigator.vendor || '';
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-    if (!isMobile) {
+    if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       inputRef.current?.focus();
     }
   }, [currentIndex]);
 
-  // Build suggestions list
+  // Suggestions logic
   const safeGuess = normalize(guess);
   const tokens = safeGuess.split(/\s+/).filter(Boolean);
   const suggestions = allPlayers
-    .filter(player => {
-      const name = normalize(player.full_name ?? '');
-      return tokens.every(tok => name.includes(tok));
-    })
-    .sort((a, b) => {
-      const aR = parseInt(a.overall_rating || '0', 10);
-      const bR = parseInt(b.overall_rating || '0', 10);
-      return bR - aR;
-    })
+    .filter(p => tokens.every(tok => normalize(p.full_name).includes(tok)))
+    .sort((a, b) => Number(b.overall_rating) - Number(a.overall_rating))
     .slice(0, 10);
 
-  // Handle a guess attempt
+  // Handle guess
   const handleGuess = () => {
     if (!guess.trim()) return;
-    const correctName = normalize(section.player.full_name);
-    if (safeGuess === correctName) {
+    const correctKey = normalize(section.player.full_name);
+    if (safeGuess === correctKey) {
       const elapsed = Date.now() - startTime;
       const pts = Math.max(
         Math.ceil(((duration * 1000 - elapsed) / (duration * 1000)) * 100),
         20
       );
-      setScore(prev => prev + pts);
+      setScore(s => s + pts);
       setResult({ type: 'success', text: `✔️ Correct! +${pts} pts` });
       setTimeout(() => {
         setResult(null);
@@ -72,16 +62,16 @@ export function QuizControls({
     }
   };
 
-  // Handle pressing Next: show correct answer then advance
+  // Handle next (show answer then skip)
   const handleNext = () => {
-    setResult({ type: 'info', text: `Correct answer: ${section.player.full_name}` });
+    setResult({ type: 'info', text: `ℹ️ Answer: ${section.player.full_name}` });
     setTimeout(() => {
       setResult(null);
       onSkip();
     }, 2000);
   };
 
-  // Keyboard navigation & Enter/Tab behavior
+  // Keyboard navigation
   const handleKeyDown = e => {
     if (showSuggestions && suggestions.length > 0) {
       if (e.key === 'ArrowDown') {
@@ -116,22 +106,22 @@ export function QuizControls({
     }
   };
 
-  // Animation on error; green ring on success
-  const shakeAnim = result?.type === 'error' ? { x: [0, -8, 8, -8, 8, 0] } : {};
+  // Anim & border style
+  const shake = result?.type === 'error' ? { x: [0, -6, 6, -6, 6, 0] } : {};
   const borderClass = result?.type === 'success' ? 'ring-2 ring-green-400' : '';
 
   return (
-    <div className="bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-xl flex flex-col space-y-4 sm:space-y-6 lg:col-span-1">
-      <h2 className="text-2xl font-bold text-white">
-        Score: <span className="text-green-400">{score}</span>
-      </h2>
-
-      <label htmlFor="guess" className="block text-sm font-medium text-gray-200">
-        Enter full name of the player:
-      </label>
-
-      <motion.div animate={shakeAnim} transition={{ duration: 0.5 }}>
-        <input
+    <div className="bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-xl flex flex-col">
+      <div className="flex-grow overflow-auto space-y-4">
+        <h2 className="text-2xl font-bold text-white">
+          Score: <span className="text-green-400">{score}</span>
+        </h2>
+        <label htmlFor="guess" className="block text-sm font-medium text-gray-200">
+          Enter full name of the player:
+        </label>
+        <motion.input
+          animate={shake}
+          transition={{ duration: 0.5 }}
           id="guess"
           ref={inputRef}
           type="text"
@@ -145,69 +135,63 @@ export function QuizControls({
             setShowSuggestions(true);
           }}
           onKeyDown={handleKeyDown}
-          className={`
-            block w-full rounded-lg bg-gray-700 text-white placeholder-gray-400
+          className={
+            `block w-full rounded-lg bg-gray-700 text-white placeholder-gray-400
             border border-gray-600 focus:outline-none focus:border-indigo-500
             focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
-            transition-shadow duration-200 py-2 px-4 ${borderClass}
-          `}
+            transition-shadow duration-200 py-2 px-4 ${borderClass}`
+          }
         />
-      </motion.div>
-
-      {result && (
-        <div className={`
-          text-sm italic 
-          ${result.type === 'error' ? 'text-red-400' :
-            result.type === 'success' ? 'text-green-400' : 'text-gray-300'}
-        `}>
-          {result.text}
+        {/* suggestions wrapper fixed height */}
+        <div className="h-48 mt-2 relative">
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="absolute top-0 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded-lg shadow-md">
+              {suggestions.map((p, i) => (
+                <li
+                  key={`${p.id}-${i}`}
+                  onMouseDown={() => { setGuess(p.full_name); setShowSuggestions(false); }}
+                  className={`px-4 py-2 text-white cursor-pointer transition ${
+                    i === highlightedIndex ? 'bg-indigo-600' : 'hover:bg-gray-700'
+                  }`}
+                >
+                  {p.full_name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      )}
-
-      {showSuggestions && suggestions.length > 0 && (
-        <ul className="mt-1 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-600 rounded-lg shadow-md">
-          {suggestions.map((player, i) => (
-            <li
-              key={`${player.id}-${i}`}
-              onMouseDown={() => {
-                setGuess(player.full_name);
-                setShowSuggestions(false);
-              }}
-              className={`
-                px-4 py-2 text-white cursor-pointer transition
-                ${i === highlightedIndex ? 'bg-indigo-600' : 'hover:bg-gray-700'}
-              `}
-            >
-              {player.full_name}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="flex flex-col space-y-2 pt-2">
-        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-          {/* Guess = 2/3 width on desktop */}
+        {/* result message placeholder */}
+        <div className="min-h-[1.5rem]">
+          {result && (
+            <p className={`text-sm italic ${
+              result.type === 'error'
+                ? 'text-red-400'
+                : result.type === 'success'
+                ? 'text-green-400'
+                : 'text-gray-300'
+            }`}>
+              {result.text}
+            </p>
+          )}
+        </div>
+      </div>
+      {/* buttons */}
+      <div className="mt-4 space-y-2">
+        <div className="flex space-x-4">
           <button
             onClick={handleGuess}
             disabled={!guess.trim()}
-            className="w-full sm:flex-[2] py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold text-white transition"
-          >
-            Guess
-          </button>
-          {/* Next = 1/3 width on desktop */}
+            className="w-full sm:w-2/3 py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold text-white transition"
+          >Guess</button>
           <button
             onClick={handleNext}
-            className="w-full sm:flex-[1] py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold text-white transition"
-          >
-            Next
-          </button>
+            className="w-full sm:w-1/3 py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold text-white transition"
+          >Next</button>
         </div>
         <button
           onClick={onAbort}
           className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white transition"
-        >
-          Cancel
-        </button>
+        >Cancel</button>
       </div>
     </div>
   );
